@@ -37,7 +37,8 @@ class DB {
 		$values = implode(", ", $values);
 		$sql = "INSERT INTO ".$table." (".$cols.") VALUES (".$values.")";
 		
-		return $this->run($sql);
+		$response = $this->run($sql);
+		return mysqli_insert_id($this->conn);
 	}
 	
 	public function update($table, $new = array(), $where = array()){
@@ -110,9 +111,14 @@ class DB {
 		if(isset($where)){
 			$sql .= " WHERE ".$where;
 		}
-		echo $sql;
+		
 		$data = $this->run($sql);
-		return mysqli_fetch_object($data);
+		$result = array();
+		while($dat = mysqli_fetch_array($data)){
+			array_push($result, (object) $dat);
+		}
+		
+		return $result;
 	}
 	
 	private function run($sql){
