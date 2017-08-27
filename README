@@ -1,0 +1,89 @@
+A VERY SIMPLE MySQL QUERY BUILDER
+
+Usage:
+	Include the 'Db.php' file in your script;
+	
+	include('Db.php');
+	
+	Create a configuration array that will hold database login information and table prefix,
+	
+	$config = array(
+		'db_username' => 'root',
+		'db_password' => '',
+		'db_name' => 'test',
+		'db_prefix' => 'st_',	
+		'db_server' => 'localhost',	
+	);
+	
+	Initialize the class using the array:
+	
+	$db = new Db($config);
+	
+Available methods:
+	$db->insert($table_name, $data_array);
+	
+		$table_name: The name of the table without the prefix.
+		$data_array: An associative array of data to insert, with table columns as keys and data as values
+			Example:
+				$data_array = array(
+					'fname' => 'Ben',
+					'sname' => 'Muriithi',
+					'age' => '20'
+				);
+			where fname, sname and age are columns in the table.
+			
+			$db->insert('users', $data_array); //This will add into the table names 'st_users'.
+			// Produces and executes: INSERT INTO st_users (fname, sname, age) VALUES ('Ben', 'Muriithi', '20')
+	
+	$db->select($table, $columns, $condition);
+		This method returns an object of a MySQL select result.
+		PARAMS:
+			$table: The table name without the prefix
+			$columns: Optional. Array of Columns to select from the table
+			$condition: Array of conditions to apply to get data.
+				Example:
+					$db->select('users')
+						// Produces and executes: SELECT * FROM st_users
+					$columns = array(
+						'fname',
+						'age'
+					);
+					$db->select('users', $columns)
+						// Produces and executes: SELECT fname, age FROM st_users;
+					
+					$condition = array(
+						'age' => '24'
+					);
+					
+					$db->select('users', '', $condition)
+						// Produces and executes: SELECT * FROM st_users WHERE age = '24'
+						
+					$db->select('users', '$columns', $condition)
+						// Produces and executes: SELECT fname, age FROM st_users WHERE age = '24'
+	
+	$db->update($table_name, $new_data, $where)
+		$table_name: The name of the table without the prefix.
+		$new_data: An associative array containing fields to be updated as keys and new values as their values.
+		$where: An associative array with the MySQL 'where' conditions.
+			Example:
+				$new_data = array(
+					'fname' => 'Edward'
+				);
+				$where = array(
+					'fname' => 'Bennito',
+					'age' => '20'
+				);
+			$db->update('users', $new_data, $where);
+			//Produces and executes: UPDATE st_users SET fname='Edward' WHERE fname='Bennito' AND age = '20'
+			
+	$db->delete($table_name, $condition)
+		$table_name: The name of the table without the prefix.
+		$condition: An associative array of Delete condition.
+			Example:
+				$condition = array = array(
+					'age' => 20,
+					'sname' => 'Muriithi'
+				);
+			$db->delete('users', $condition);
+			//Produces and executes: DELETE FROM users WHERE age = '20' AND sname = 'Muriithi'
+			
